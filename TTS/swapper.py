@@ -5,9 +5,10 @@ from dotenv import load_dotenv
 from TTS.GTTS import GTTS
 from TTS.POLLY import POLLY
 from TTS.TikTok import TikTok
+from TTS.Uberduck import Uber
 from utils.console import print_substep
 
-CHOICE_DIR = {"tiktok": TikTok, "gtts": GTTS, "polly": POLLY}
+CHOICE_DIR = {"tiktok": TikTok, "gtts": GTTS, 'polly': POLLY, 'uber': Uber}
 
 
 class TTS:
