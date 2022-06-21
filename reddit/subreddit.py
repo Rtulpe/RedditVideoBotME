@@ -1,4 +1,7 @@
+import json
+import os
 import re
+import time
 from os import getenv, environ
 
 import praw
@@ -75,6 +78,30 @@ def get_subreddit_threads():
     submission = check_done(submission)  # double checking
     if submission is None:
         return get_subreddit_threads()  # submission already done. rerun
+
+    environ["VIDEO_TITLE"] = str(textify(submission.title))  # todo use global instend of env vars
+    environ["VIDEO_ID"] = str(textify(submission.id))
+
+    print_step(f"Video would be: {submission.title}")
+    if input("Rerun? > ").strip().casefold() == "yes":
+        #todo move to utils
+        def save_data():
+            with open("./video_creation/data/videos.json", "r+") as raw_vids:
+                done_vids = json.load(raw_vids)
+                payload = {
+                    "id": str(os.getenv("VIDEO_ID")),
+                    "time": str(int(time.time())),
+                    "background_credit": str(os.getenv("background_credit")),
+                    "reddit_title": str(os.getenv("VIDEO_TITLE")),
+                    "filename": "Skipped",
+                }
+                done_vids.append(payload)
+                raw_vids.seek(0)
+                json.dump(done_vids, raw_vids, ensure_ascii=False, indent=4)
+
+        save_data()
+        return get_subreddit_threads()
+
     upvotes = submission.score
     ratio = submission.upvote_ratio * 100
     num_comments = submission.num_comments
@@ -83,8 +110,6 @@ def get_subreddit_threads():
     print_substep(f"Thread has {upvotes} upvotes", style="bold blue")
     print_substep(f"Thread has a upvote ratio of {ratio}%", style="bold blue")
     print_substep(f"Thread has {num_comments} comments", style="bold blue")
-    environ["VIDEO_TITLE"] = str(textify(submission.title))  # todo use global instend of env vars
-    environ["VIDEO_ID"] = str(textify(submission.id))
 
     content["thread_url"] = f"https://reddit.com{submission.permalink}"
     content["thread_title"] = submission.title
