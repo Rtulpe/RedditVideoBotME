@@ -134,7 +134,7 @@ def make_final_video(number_of_clips, length):
         print_substep("the results folder didn't exist so I made it")
         os.mkdir("./results")
 
-    final.write_videofile("assets/temp/temp.mp4", fps=30, audio_codec="aac", audio_bitrate="192k")
+    final.write_videofile("assets/temp/temp.mp4", fps=24, audio_codec="aac", audio_bitrate="192k", threads=8, preset="ultrafast")
     ffmpeg_tools.ffmpeg_extract_subclip(
         "assets/temp/temp.mp4", 0, length, targetname=f"results/{filename}"
     )
