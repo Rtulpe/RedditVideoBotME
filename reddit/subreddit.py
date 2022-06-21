@@ -73,7 +73,7 @@ def get_subreddit_threads():
     if getenv("POST_ID"):
         submission = reddit.submission(id=getenv("POST_ID"))
     else:
-        threads = subreddit.hot(limit=25)
+        threads = subreddit.top(time_filter="year")
         submission = get_subreddit_undone(threads, subreddit)
     submission = check_done(submission)  # double checking
     if submission is None:
