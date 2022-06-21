@@ -32,7 +32,7 @@ def make_final_video(number_of_clips, length):
     opacity = os.getenv("OPACITY")
     background_clip = (
         VideoFileClip("assets/temp/background.mp4")
-        .without_audio()
+        .copy()
         .resize(height=H)
         .crop(x1=1166.6, y1=0, x2=2246.6, y2=1920)
     )
