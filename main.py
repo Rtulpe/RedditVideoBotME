@@ -6,11 +6,11 @@ from os import getenv, name
 from reddit.subreddit import get_subreddit_threads
 from utils.cleanup import cleanup
 from utils.console import print_markdown, print_step
-# from utils.checker import envUpdate
 from video_creation.background import download_background, chop_background_video
 from video_creation.final_video import make_final_video
 from video_creation.screenshot_downloader import download_screenshots_of_reddit_posts
 from video_creation.voices import save_text_to_mp3
+
 VERSION = 2.1
 print(
     """
@@ -38,7 +38,6 @@ reddit2fa = getenv("REDDIT_2FA")
 
 
 def main():
-    #envUpdate()
     cleanup()
 
     def get_obj():
@@ -51,6 +50,7 @@ def main():
     download_background()
     chop_background_video(length)
     make_final_video(number_of_comments, length)
+    re_run()
 
 
 def run_many(times):
@@ -61,6 +61,12 @@ def run_many(times):
         )  # correct 1st 2nd 3rd 4th 5th....
         main()
         Popen("cls" if name == "nt" else "clear", shell=True).wait()
+
+
+def re_run():
+    if input("Press enter to re-run, else exit > ").strip().casefold() == "":
+        return main()
+    return
 
 
 if __name__ == "__main__":

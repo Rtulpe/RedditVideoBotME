@@ -83,21 +83,7 @@ def get_subreddit_threads():
     environ["VIDEO_ID"] = str(textify(submission.id))
 
     print_step(f"Video would be: {submission.title}")
-    if input("Rerun? > ").strip().casefold() == "yes":
-        #todo move to utils
-        def save_data():
-            with open("./video_creation/data/videos.json", "r+") as raw_vids:
-                done_vids = json.load(raw_vids)
-                payload = {
-                    "id": str(os.getenv("VIDEO_ID")),
-                    "time": str(int(time.time())),
-                    "background_credit": str(os.getenv("background_credit")),
-                    "reddit_title": str(os.getenv("VIDEO_TITLE")),
-                    "filename": "Skipped",
-                }
-                done_vids.append(payload)
-                raw_vids.seek(0)
-                json.dump(done_vids, raw_vids, ensure_ascii=False, indent=4)
+    if input("Press Enter to use this, else will find another > ").strip().casefold() != "":
 
         save_data()
         return get_subreddit_threads()
@@ -131,3 +117,18 @@ def get_subreddit_threads():
                 )
     print_substep("Received subreddit threads Successfully.", style="bold green")
     return content
+
+
+def save_data():
+    with open("./video_creation/data/videos.json", "r+") as raw_vids:
+        done_vids = json.load(raw_vids)
+        payload = {
+            "id": str(os.getenv("VIDEO_ID")),
+            "time": str(int(time.time())),
+            "background_credit": str(os.getenv("background_credit")),
+            "reddit_title": str(os.getenv("VIDEO_TITLE")),
+            "filename": "Skipped",
+        }
+        done_vids.append(payload)
+        raw_vids.seek(0)
+        json.dump(done_vids, raw_vids, ensure_ascii=False, indent=4)

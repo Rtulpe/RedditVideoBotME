@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-import json
 import os
-import time
 from os.path import exists
 
 from moviepy.editor import (
@@ -16,7 +14,7 @@ from moviepy.editor import (
 from moviepy.video.io import ffmpeg_tools
 from rich.console import Console
 
-from reddit import subreddit
+from reddit.subreddit import save_data
 from utils.cleanup import cleanup
 from utils.console import print_step, print_substep
 
@@ -112,24 +110,8 @@ def make_final_video(number_of_clips, length):
             return title[0:30] + "..."
 
     filename = f"{get_video_title()}.mp4"
-
-    def save_data():
-        with open("./video_creation/data/videos.json", "r+") as raw_vids:
-            done_vids = json.load(raw_vids)
-            if str(subreddit.submission.id) in [video["id"] for video in done_vids]:
-                return  # video already done but was specified to continue anyway in the .env file
-            payload = {
-                "id": str(os.getenv("VIDEO_ID")),
-                "time": str(int(time.time())),
-                "background_credit": str(os.getenv("background_credit")),
-                "reddit_title": str(os.getenv("VIDEO_TITLE")),
-                "filename": filename,
-            }
-            done_vids.append(payload)
-            raw_vids.seek(0)
-            json.dump(done_vids, raw_vids, ensure_ascii=False, indent=4)
-
     save_data()
+
     if not exists("./results"):
         print_substep("the results folder didn't exist so I made it")
         os.mkdir("./results")
