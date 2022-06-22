@@ -1,3 +1,4 @@
+import threading
 import time
 
 from subprocess import Popen
@@ -47,9 +48,17 @@ def main():
 
     reddit_object = get_obj()
     length, number_of_comments = save_text_to_mp3(reddit_object)
-    download_screenshots_of_reddit_posts(reddit_object, number_of_comments)
-    download_background()
-    chop_background_video(length)
+
+    # Run in parallel
+    t1 = threading.Thread(target=download_screenshots_of_reddit_posts, args=[reddit_object, number_of_comments])
+    t2 = threading.Thread(target=chop_background_video, args=[length])
+
+    t1.start()
+    t2.start()
+    t1.join()
+    t2.join() #Waits before proceeding
+
+    # download_background() # no need to call repeatedly
     make_final_video(number_of_comments, length)
     re_run()
 

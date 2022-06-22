@@ -100,7 +100,9 @@ def make_final_video(number_of_clips, length):
     # else:
     image_concat = concatenate_videoclips(image_clips).set_position(("center", "center"))
     image_concat.audio = audio_composite
-    final = CompositeVideoClip([background_clip, image_concat])
+
+    # Change bg sound with volumex
+    final = CompositeVideoClip([background_clip.volumex(0.05), image_concat])
 
     def get_video_title() -> str:
         title = os.getenv("VIDEO_TITLE") or "final_video"
@@ -116,11 +118,11 @@ def make_final_video(number_of_clips, length):
         print_substep("the results folder didn't exist so I made it")
         os.mkdir("./results")
 
-    final.write_videofile("assets/temp/temp.mp4", fps=24, audio_codec="aac", audio_bitrate="192k", threads=8, preset="ultrafast")
+    final.write_videofile("assets/temp/temp.mp4", fps=24, audio_codec="aac", audio_bitrate="192k", threads=8,
+                          preset="ultrafast")
     ffmpeg_tools.ffmpeg_extract_subclip(
         "assets/temp/temp.mp4", 0, length, targetname=f"results/{filename}"
     )
-    # os.remove("assets/temp/temp.mp4")
 
     print_step("Removing temporary files 🗑")
     cleanups = cleanup()
