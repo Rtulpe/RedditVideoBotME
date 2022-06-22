@@ -2,13 +2,12 @@
 import os
 from os.path import exists
 
+import ffmpeg
 from moviepy.editor import (
     VideoFileClip,
     AudioFileClip,
     ImageClip,
     concatenate_videoclips,
-    concatenate_audioclips,
-    CompositeAudioClip,
     CompositeVideoClip,
 )
 from moviepy.video.io import ffmpeg_tools
@@ -24,24 +23,28 @@ W, H = 1080, 1920
 
 
 def make_final_video(number_of_clips, length):
-    print_step("Creating the final video 🎥")
-    VideoFileClip.reW = lambda clip: clip.resize(width=W)
-    VideoFileClip.reH = lambda clip: clip.resize(width=H)
     opacity = os.getenv("OPACITY")
-    background_clip = (
-        VideoFileClip("assets/temp/background.mp4")
-        .copy()
-        .resize(height=H)
-        .crop(x1=1166.6, y1=0, x2=2246.6, y2=1920)
-    )
 
-    # Gather all audio clips
+    print_step("Creating the final video 🎥")
+    bg_in = ffmpeg.input("assets/temp/background.mp4")
+    # todo implement bg_a = bg_in.audio
+    bg_v = bg_in.video.scale(size='hd1080').crop(x=656, y=0, h=1080, w=608).scale(h=H, w=W)
+
+    fg_a = ffmpeg.input("assets/temp/mp3/title.mp3").audio
+    for i in range(number_of_clips):
+        fg_a = ffmpeg.avfilters.concat(fg_a, ffmpeg.input(f"assets/temp/mp3/{i}.mp3").audio, v=0, a=1)
+
+    final = bg_v.output(fg_a, 'assets/temp/prev.mp4')
+    final.run()
+
+    prev_clip = VideoFileClip("assets/temp/prev.mp4")
+
+    # todo switch to ffmpeg
+    # Lenght approximation
     audio_clips = []
+    audio_clips.insert(0, AudioFileClip("assets/temp/mp3/title.mp3"))
     for i in range(0, number_of_clips):
         audio_clips.append(AudioFileClip(f"assets/temp/mp3/{i}.mp3"))
-    audio_clips.insert(0, AudioFileClip("assets/temp/mp3/title.mp3"))
-    audio_concat = concatenate_audioclips(audio_clips)
-    audio_composite = CompositeAudioClip([audio_concat])
 
     # Get sum of all clip lengths
     total_length = sum([clip.duration for clip in audio_clips])
@@ -88,21 +91,10 @@ def make_final_video(number_of_clips, length):
                 .set_opacity(float(opacity)),
             )
 
-    # if os.path.exists("assets/mp3/posttext.mp3"):
-    #    image_clips.insert(
-    #        0,
-    #        ImageClip("assets/png/title.png")
-    #        .set_duration(audio_clips[0].duration + audio_clips[1].duration)
-    #        .set_position("center")
-    #        .resize(width=W - 100)
-    #        .set_opacity(float(opacity)),
-    #    )
-    # else:
     image_concat = concatenate_videoclips(image_clips).set_position(("center", "center"))
-    image_concat.audio = audio_composite
 
     # Change bg sound with volumex
-    final = CompositeVideoClip([background_clip.volumex(0.05), image_concat])
+    final = CompositeVideoClip([prev_clip, image_concat])
 
     def get_video_title() -> str:
         title = os.getenv("VIDEO_TITLE") or "final_video"

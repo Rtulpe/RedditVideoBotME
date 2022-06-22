@@ -3,7 +3,6 @@ import time
 
 from subprocess import Popen
 
-import ffmpeg
 from dotenv import load_dotenv
 from os import getenv, name
 
@@ -48,40 +47,27 @@ reddit2fa = getenv("REDDIT_2FA")
 
 
 def main():
-    # cleanup()
+    cleanup()
 
     def get_obj():
         reddit_obj = get_subreddit_threads()
         return reddit_obj
 
-    # reddit_object = get_obj()
-    # length, number_of_comments = save_text_to_mp3(reddit_object)
-
-    bg_in = ffmpeg.input("assets/temp/background.mp4")
-    bg_a = bg_in.audio
-    # bg_v = bg_in.video.scale(size='hd1080').crop(x=656, y=0, h=1080, w=608).scale(h=1920, w=1080).output(bg_a, "test"
-    #                                                                                                        ".mp4")
-    # bg_v.run()
-
-    fg_a = ffmpeg.input("assets/temp/mp3/title.mp3").audio
-    for i in range(0, 5):
-        fg_a = ffmpeg.avfilters.concat(fg_a, ffmpeg.input(f"assets/temp/mp3/{i}.mp3").audio, v=0, a=1)
-    #
-    final = fg_a.output("test.mp3", audio_bitrate='48k' )
-    final.run()
+    reddit_object = get_obj()
+    length, number_of_comments = save_text_to_mp3(reddit_object)
 
     # Run in parallel
-    # t1 = threading.Thread(target=download_screenshots_of_reddit_posts, args=[reddit_object, number_of_comments])
-    # t2 = threading.Thread(target=chop_background_video, args=[length])
+    t1 = threading.Thread(target=download_screenshots_of_reddit_posts, args=[reddit_object, number_of_comments])
+    t2 = threading.Thread(target=chop_background_video, args=[length])
 
-    # t1.start()
-    # t2.start()
-    # t1.join()
-    # t2.join() #Waits before proceeding
+    t1.start()
+    t2.start()
+    t1.join()
+    t2.join() #Waits before proceeding
 
-    # download_background() # no need to call repeatedly
-    # make_final_video(number_of_comments, length)
-    # re_run()
+    download_background() # no need to call repeatedly
+    make_final_video(number_of_comments, length)
+    re_run()
 
 
 def run_many(times):
