@@ -14,7 +14,7 @@ from moviepy.video.io import ffmpeg_tools
 from rich.console import Console
 
 from reddit.subreddit import save_data
-from utils.cleanup import cleanup
+
 from utils.console import print_step, print_substep
 
 console = Console()
@@ -34,7 +34,7 @@ def make_final_video(number_of_clips, length):
     for i in range(number_of_clips):
         fg_a = ffmpeg.avfilters.concat(fg_a, ffmpeg.input(f"assets/temp/mp3/{i}.mp3").audio, v=0, a=1)
 
-    final = bg_v.output(fg_a, 'assets/temp/prev.mp4')
+    final = bg_v.output(fg_a, 'assets/temp/prev.mp4', video_bitrate='8000k')
     final.run()
 
     prev_clip = VideoFileClip("assets/temp/prev.mp4")
@@ -116,9 +116,6 @@ def make_final_video(number_of_clips, length):
         "assets/temp/temp.mp4", 0, length, targetname=f"results/{filename}"
     )
 
-    print_step("Removing temporary files 🗑")
-    cleanups = cleanup()
-    print_substep(f"Removed {cleanups} temporary files 🗑")
     print_substep("See result in the results folder!")
 
     print_step(

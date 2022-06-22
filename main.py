@@ -18,7 +18,7 @@ from video_creation.voices import save_text_to_mp3
 from plyer import notification
 
 # Change to True for hw acc
-settings.CUDA_ENABLE = False
+settings.CUDA_ENABLE = True
 
 VERSION = 2.1
 print(
