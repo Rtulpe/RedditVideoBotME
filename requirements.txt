@@ -11,3 +11,4 @@ sox==1.4.1
 
 polling~=0.3.2
 plyer~=2.0.0
+ffmpeg-generator
