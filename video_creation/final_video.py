@@ -34,7 +34,7 @@ def make_final_video(number_of_clips, length):
     for i in range(number_of_clips):
         fg_a = ffmpeg.avfilters.concat(fg_a, ffmpeg.input(f"assets/temp/mp3/{i}.mp3").audio, v=0, a=1)
 
-    final = bg_v.output(fg_a, 'assets/temp/prev.mp4', video_bitrate='8000k')
+    final = bg_v.output(fg_a, 'assets/temp/prev.mp4', video_bitrate='16000k')
     final.run()
 
     prev_clip = VideoFileClip("assets/temp/prev.mp4")
@@ -98,7 +98,7 @@ def make_final_video(number_of_clips, length):
 
     def get_video_title() -> str:
         title = os.getenv("VIDEO_TITLE") or "final_video"
-        if len(title) <= 35:
+        if len(title) <= 350:
             return title
         else:
             return title[0:30] + "..."
