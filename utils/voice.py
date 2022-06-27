@@ -1,4 +1,5 @@
 import re
+from os import getenv
 
 
 def sanitize_text(text):
@@ -18,7 +19,7 @@ def sanitize_text(text):
     result = re.sub(regex_expr, " ", result)
 
     # Subreddit "Macro" changer
-    pattern = re.compile("eli5", re.IGNORECASE)
+    pattern = re.compile(str(getenv("REDDITMACRO")), re.IGNORECASE)
     result = pattern.sub("Explain like I'm 5", result)
 
     # remove extra whitespace
