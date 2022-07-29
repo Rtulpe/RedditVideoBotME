@@ -6,7 +6,7 @@ from requests import post, get
 
 from utils.console import print_step
 
-
+#todo reimplement
 def _get_audio(uuid: str) -> Union[dict, bool]:
     """
     A private function to recieve audio from the API using a UUID. This function is polled until the desired audio is available.
