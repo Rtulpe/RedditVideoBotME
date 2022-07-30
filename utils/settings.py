@@ -4,10 +4,11 @@ from rich.console import Console
 import re
 
 from typing import Tuple, Dict
+from ffmpeg import settings
 
 from utils.console import handle_input
 
-
+settings.CUDA_ENABLE = False
 console = Console()
 config = dict  # autocomplete
 

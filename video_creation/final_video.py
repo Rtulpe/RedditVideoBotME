@@ -4,6 +4,8 @@ import os
 import re
 from os.path import exists
 from typing import Tuple, Any
+
+import ffmpeg
 from moviepy.audio.AudioClip import concatenate_audioclips, CompositeAudioClip
 from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.VideoClip import ImageClip
@@ -61,15 +63,20 @@ def make_final_video(
     #    print('No background audio volume found in config.toml. Using default value of 1.')
     #    VOLUME_MULTIPLIER = 1
     print_step("Creating the final video 🎥")
-    VideoFileClip.reW = lambda clip: clip.resize(width=W)
-    VideoFileClip.reH = lambda clip: clip.resize(width=H)
+
+    #Supa Fast algo master branch would be jelly of
+    bg_in = ffmpeg.input("assets/temp/background.mp4")
+    bg_v = bg_in.video.scale(size='hd1080').crop(x=656, y=0, h=1080, w=608).scale(h=H, w=W)
+    fg_a = ffmpeg.input("assets/temp/mp3/title.mp3").audio
+    for i in range(number_of_clips):
+        fg_a = ffmpeg.avfilters.concat(fg_a, ffmpeg.input(f"assets/temp/mp3/{i}.mp3").audio, v=0, a=1)
+
+    final = bg_v.output(fg_a, 'assets/temp/prev.mp4', video_bitrate='16000k')
+    final.run()
+    #End of algo
+
     opacity = settings.config["settings"]["opacity"]
-    background_clip = (
-        VideoFileClip("assets/temp/background.mp4")
-        .without_audio()
-        .resize(height=H)
-        .crop(x1=1166.6, y1=0, x2=2246.6, y2=1920)
-    )
+    background_clip = VideoFileClip("assets/temp/prev.mp4")
 
     # Gather all audio clips
     audio_clips = [AudioFileClip(f"assets/temp/mp3/{i}.mp3") for i in range(number_of_clips)]

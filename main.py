@@ -20,7 +20,15 @@ from video_creation.screenshot_downloader import download_screenshots_of_reddit_
 from video_creation.voices import save_text_to_mp3
 
 __VERSION__ = "2.3"
-settings.CUDA_ENABLE = False
+
+#todo: delete awspolly nonsense
+#todo: delete translation stuff
+#todo: make voices great again
+#todo: reruns, notifs, less user input, more speed
+#todo: threads
+#todo: get rid of stupid GUI stuff which doesn't even work
+#todo: thus spoke uberduck
+
 
 print(
     """
