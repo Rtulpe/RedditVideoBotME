@@ -131,9 +131,6 @@ def make_final_video(
         targetname=f"results/{subreddit}/{filename}",
     )
     save_data(subreddit, filename, title, idx, background_config[2])
-    print_step("Removing temporary files 🗑")
-    cleanups = cleanup()
-    print_substep(f"Removed {cleanups} temporary files 🗑")
     print_substep("See result in the results folder!")
 
     print_step(
