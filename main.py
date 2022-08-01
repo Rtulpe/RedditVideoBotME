@@ -23,7 +23,6 @@ __VERSION__ = "2.3"
 
 #todo: delete awspolly nonsense
 #todo: delete translation stuff
-#todo: make voices great again
 #todo: reruns, notifs, less user input, more speed
 #todo: threads
 #todo: get rid of stupid GUI stuff which doesn't even work
@@ -98,5 +97,5 @@ if __name__ == "__main__":
             main()
     except KeyboardInterrupt:
         print_markdown("## Clearing temp files")
-        cleanup()
+        #cleanup()
         exit()

@@ -81,8 +81,6 @@ def make_final_video(
     # Gather all audio clips
     audio_clips = [AudioFileClip(f"assets/temp/mp3/{i}.mp3") for i in range(number_of_clips)]
     audio_clips.insert(0, AudioFileClip("assets/temp/mp3/title.mp3"))
-    audio_concat = concatenate_audioclips(audio_clips)
-    audio_composite = CompositeAudioClip([audio_concat])
 
     console.log(f"[bold green] Video Will Be: {length} Seconds Long")
     # add title to video
@@ -105,19 +103,8 @@ def make_final_video(
             .set_opacity(new_opacity)
         )
 
-    # if os.path.exists("assets/mp3/posttext.mp3"):
-    #    image_clips.insert(
-    #        0,
-    #        ImageClip("assets/png/title.png")
-    #        .set_duration(audio_clips[0].duration + audio_clips[1].duration)
-    #        .set_position("center")
-    #        .resize(width=W - 100)
-    #        .set_opacity(float(opacity)),
-    #    )
-    # else: story mode stuff
     img_clip_pos = background_config[3]
     image_concat = concatenate_videoclips(image_clips).set_position(img_clip_pos)
-    image_concat.audio = audio_composite
     final = CompositeVideoClip([background_clip, image_concat])
     title = re.sub(r"[^\w\s-]", "", reddit_obj["thread_title"])
     idx = re.sub(r"[^\w\s-]", "", reddit_obj["thread_id"])
@@ -128,14 +115,6 @@ def make_final_video(
     if not exists(f"./results/{subreddit}"):
         print_substep("The results folder didn't exist so I made it")
         os.makedirs(f"./results/{subreddit}")
-
-    # if settings.config["settings"]['background']["background_audio"] and exists(f"assets/backgrounds/background.mp3"):
-    #    audioclip = mpe.AudioFileClip(f"assets/backgrounds/background.mp3").set_duration(final.duration)
-    #    audioclip = audioclip.fx( volumex, 0.2)
-    #    final_audio = mpe.CompositeAudioClip([final.audio, audioclip])
-    #    # lowered_audio = audio_background.multiply_volume( # todo get this to work
-    #    #    VOLUME_MULTIPLIER)  # lower volume by background_audio_volume, use with fx
-    #    final.set_audio(final_audio)
 
     final.write_videofile(
         "assets/temp/temp.mp4",
